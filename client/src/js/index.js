@@ -5,6 +5,7 @@
 //Import modules 
 import  "./form";
 import "./submit";
+import { initDb, getDb, postDb } from './database'; 
 
 //Import CSS files
 import "../css/index.css";
@@ -24,6 +25,13 @@ window.addEventListener('load', function () {
     document.getElementById('logo').src = Logo;
     document.getElementById('bearThumbnail').src = Bear;
     document.getElementById('dogThumbnail').src = Dog;
+    initDb()
+
+  // We are temporarily placing getDb() and postDb() function calls here for testing. We will move it to another event listener later.
+  getDb();
+  postDb("Lernantino", "learnantino@test.com", 8186601234, "Bear");
+  getDb();
+});
    
     
-  });
+  
