@@ -2,11 +2,10 @@
 //The entry point is the file that webpack will look at to determine what dependencies and assets are needed for the app to work. Since we need the logic from both the form.js and the submit.js file for our app to work, we import them into index.js so that they will be included in the bundle.
 //Webpack works by creating a dependency graph of all the modules and assets using the entry point as the starting point.
 
-//Import modules 
-import "./form";
-import { initDb, getDb, postDb, deleteDb } from './database';
-import { fetchCards } from "./cards";
-import { toggleForm, clearForm} from "./form";
+// Import functions
+import {initdb, postDb, deleteDb, editDb} from './database';
+import {fetchCards} from './cards';
+import { toggleForm, clearForm } from './form';
 
 //Import CSS files
 import "../css/index.css";
@@ -20,8 +19,8 @@ import Logo from '../images/logo.png';
 import Bear from '../images/bear.png';
 import Dog from '../images/dog.png';
 
-import { initdb } from './database';
 
+//on load functionality
 window.addEventListener('load', function () {
   initDb()
   fetchCards();
@@ -48,13 +47,19 @@ form.addEventListener('submit', event => {
   let phone = document.getElementById("phone").value;
   let email = document.getElementById("email").value;
   let profile = document.querySelector('input[type="radio"]:checked').value;
+  // Calls the editDB function passing in any values from the form element as well as the ID of the contact that we are updating
+  editDb(profileId, name, email, phone, profile);
 
   // Post form data to IndexedDB OR Edit an existing card in IndexedDB
   if (submitBtnToUpdate == false) {
     postDb(name, email, phone, profile);
   } else {
 
+    // Calls the editDB function passing in any values from the form element as well as the ID of the contact that we are updating
+   editDb(profileId, name, email, phone, profile);
+
     fetchCards();
+    
     // Toggles the submit button back to POST functionality
     submitBtnToUpdate = false;
   }
@@ -67,11 +72,32 @@ form.addEventListener('submit', event => {
   fetchCards();
 });
 
+// Card functionality
+// Adds deleteCard() to the global scope so each card has access to it.
 window.deleteCard = (e) => {
   // Grabs the id from the button element attached to the contact card.
   let id = parseInt(e.id);
   // Delete the card
   deleteDb(id);
-    // Reload the DOM
+  // Reload the DOM
   fetchCards();
+};
+
+window.editCard = (e) => {
+  //Grabs the id from the button element attached to the contact card and sets a global variable that will be used in the form element.
+  profileId = parseInt(e.dataset.id);
+
+  //Grabs information to pre-populate edit form
+  let editName = e.dataset.name;
+  let editEmail = e.dataset.email;
+  let editPhone = e.dataset.phone;
+
+  document.getElementById("name").value = editName;
+  document.getElementById("email").value = editEmail;
+  document.getElementById("phone").value = editPhone;
+
+  form.style.display = "block";
+
+  //Toggles the Submit button so that it now Updates an existing contact card instead of posting a new one
+  submitBtnToUpdate = true;
 };
